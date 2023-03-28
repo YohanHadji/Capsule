@@ -34,11 +34,12 @@ void Capsule::decode(byte dataIn) {
             currentState = PAYLOAD;
         break;
         case PAYLOAD:
+            if (lenCount == 0) {
+                currentState = CRC;
+                break;
+            }
             buffer.packetData[buffer.len - lenCount] = dataIn;
             lenCount--;
-            if (buffer.len == 0) {
-                currentState = CRC;
-            }
         break;
         case CRC:
         // Implement CRC check here
