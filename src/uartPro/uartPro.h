@@ -15,12 +15,13 @@ enum parserState {
 struct packet {
     byte packetData[256];
     unsigned len;
+    byte packetId;
 };
 
 class uartPro {
   public:
     uartPro(byte, byte, void (*function)(packet));
-    void decode(byte *dataIn);
+    void decode(byte);
     packet encode(packet);
   private:
     byte buffer[256]; 
