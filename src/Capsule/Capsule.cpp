@@ -47,9 +47,7 @@ void Capsule::decode(byte dataIn) {
         // If CRC is incorrect, reset the state machine
         currentState = PREAMBLE_A;
         break;
-
     }
-
 }
 
 packet Capsule::encode(packet) {

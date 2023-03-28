@@ -1,5 +1,6 @@
 #include <Arduino.h>
-#include "Capsule/Capsule.h"          // main library
+#include "Capsule/Capsule.h"    
+#include "packetDef.h"      
 
 #define DEVICE1_PORT Serial1
 #define DEVICE2_PORT Serial2
@@ -9,9 +10,9 @@
 #define DEVICE2_BAUD 115200
 #define DEVICE3_BAUD 115200
 
-void handlePacketDevice1(); 
-void handlePacketDevice2(); 
-void handlePacketDevice3(); 
+void handlePacketDevice1(packet); 
+void handlePacketDevice2(packet); 
+void handlePacketDevice3(packet); 
 
 Capsule device1(0xFF,0xFA,handlePacketDevice1);
 Capsule device2(0xFF,0xFB,handlePacketDevice2);
@@ -39,26 +40,26 @@ void loop() {
 
 void handlePacketDevice1(packet dataIn) {
   switch (dataIn.packetId) {
-    case 0x00:
-      // Print some stuff and the data recived
-      Serial.println("Packet with ID 00 received : ");
-      Serial.write(dataIn.packetData,dataIn.len);
-      // Based on the data we receive, we want to send a packet to another device 
+    // Let'pretend the ID 0x01 if for a packet sent by AV 
+    case 0x01:
+      // Example of checking the data with Lionel's packet definition 
+      PacketAV_downlink packetAVDown; 
+      if (dataIn.len == packetAV_downlink_size) { 
+        memcpy(&packetAVDown, *dataIn.packetData, packetAV_downlink_size);
+        if (packetAVDown.baro_temp == 0) {
+            Serial.println("Baro temp is 0");
+        }
+      }
+
+      // Based on the packet we juste received, we might want to send something else to someone else
       packet rawData;
-      // Name the packet you want to send accordingly, 0x32 is random here
-      rawData.packetId = 0x32; 
-      rawData.len = 16;
-      // Fill the packet how you want without having to care about preamble, len and crc
-      rawData.packetData[1] = 0x12;
-      // Then the packet is ready to be encapsulated in preamble and CRC and be sent to the port.
+      rawData.packetId = 0x02; // Let's pretend 0x02 is the good ID
+      rawData.len = packetAV_uplink_size;
+      PacketAV_uplink packetAVUp;
+      memcpy(rawData.packetData, &packetAVUp, packetAV_uplink_size);
+      // Then the packet is ready to be encapsulated between preamble and CRC and be sent to the port.
       packet packetToSend = device3.encode(rawData);
       DEVICE3_PORT.write(packetToSend.packetData,packetToSend.len);
-    break;
-    case 0x01:
-      Serial.println("Packet with ID 01 received : ");
-      Serial.write(dataIn.packetData,dataIn.len);
-    break;
-    default:
     break;
   }
 }
