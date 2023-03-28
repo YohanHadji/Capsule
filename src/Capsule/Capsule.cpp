@@ -51,6 +51,18 @@ void Capsule::decode(byte dataIn) {
     }
 }
 
-packet Capsule::encode(packet) {
-
+packet Capsule::encode(packet packetIn) {
+    packet packetOut;
+    packetOut.packetId = packetIn.packetId;
+    packetOut.len = packetIn.len;
+    packetOut.packetData[0] = PRA;
+    packetOut.packetData[1] = PRB;
+    packetOut.packetData[2] = packetIn.packetId;
+    packetOut.packetData[3] = packetIn.len;
+    for (unsigned i(0); i < packetIn.len; i++) {
+        packetOut.packetData[i + 4] = packetIn.packetData[i];
+    }
+    // Replace this line with CRC calculation
+    packetOut.packetData[packetIn.len + 4] = 0x00; 
+    return packetOut;
 }
