@@ -14,7 +14,7 @@ The goal is to be able to reliably manage multiple bidirectional UART communicat
 
 You can note that here, a different second preamble byte has been given to each device, this can be used to avoid a device being connected on the wrong port. Giving the same preamble byte to all devices, and using a single handling function would allow you to connect any device on any physical serial port on your board given that all serial ports are configured correctly in your `setup()`. This is probably the most powerful use of this code. 
 
-In the `loop()`, every byte received from the UART port is feed in the object using the `decode` function. As soon as a full packet is received, the handling callback function will be called to manage the decapsulated data. ![image](https://user-images.githubusercontent.com/58160726/228167288-f1c76e34-1be9-4906-b3d2-3c36616ad01c.png)
+In the `loop()`, every byte received from the UART port is feed in the object using the `decode` function. As soon as a full packet is received, the handling callback function will be called to manage the decapsulated data. 
 
 <img src="https://user-images.githubusercontent.com/58160726/228163890-8532bdc5-9697-44cc-8f86-fcb6d98fe9cc.png" width=40% height=40%>
 
