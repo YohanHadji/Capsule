@@ -1,4 +1,4 @@
-# UARTPro
+# Capsule
 
 **NOTE: The implementation of the parser itself has not be done yet. This is just placeholder code for the moment. But the principle of the implementation has already been defined and is described in the following readme.**
 

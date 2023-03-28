@@ -1,5 +1,5 @@
 #include <Arduino.h>
-#include "uartPro/uartPro.h"          // main library
+#include "Capsule/Capsule.h"          // main library
 
 #define DEVICE1_PORT Serial1
 #define DEVICE2_PORT Serial2
@@ -13,9 +13,9 @@ void handlePacketDevice1();
 void handlePacketDevice2(); 
 void handlePacketDevice3(); 
 
-uartPro device1(0xFF,0xFA,handlePacketDevice1);
-uartPro device2(0xFF,0xFB,handlePacketDevice2);
-uartPro device3(0xFF,0xFC,handlePacketDevice3);
+Capsule device1(0xFF,0xFA,handlePacketDevice1);
+Capsule device2(0xFF,0xFB,handlePacketDevice2);
+Capsule device3(0xFF,0xFC,handlePacketDevice3);
 
 void setup() {
   DEVICE1_PORT.begin(DEVICE1_BAUD);
