@@ -16,7 +16,6 @@ You can note that here, a different second preamble byte has been given to each 
 
 In the `loop()`, every byte received from the UART port is feed in the object using the `decode` function. As soon as a full packet is received, the handling callback function will be called to manage the decapsulated data. ![image](https://user-images.githubusercontent.com/58160726/228167288-f1c76e34-1be9-4906-b3d2-3c36616ad01c.png)
 
-
 <img src="https://user-images.githubusercontent.com/58160726/228163890-8532bdc5-9697-44cc-8f86-fcb6d98fe9cc.png" width=40% height=40%>
 
 Here is one example of data hanlding function. Note that at no point in the structure of the raw data defined, this is something that will be managed by another module. Here we just manage the encapsulation and decapsulation of the data on both ends. In this example, we respond to a given packet with another packet. For this the `encode(packet)` function is used. This function will place the packet given in input between the preamble, id, len, and crc bytes and will return the packet ready to be sent. Again, the structure of your data is not considered here. You can input whatever you want in the packet transmited to the `encode(packet)` function and it'll encode it without having to understand what it is. 
