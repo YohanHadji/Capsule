@@ -6,7 +6,7 @@ uartPro::uartPro(byte PRAIn, byte PRBIn, void (*function)(packet))
 {
 }
 
-void uartPro::decode(byte *dataIn) {
+void uartPro::decode(byte dataIn) {
 
 }
 
