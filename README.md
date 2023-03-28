@@ -4,9 +4,9 @@
 
 This is supposed to be a small protocol on the layer above the UART protocol and `Serial.read()`, `Serial.write()` function from the Arduino framework to transmit packets with a two bytes preamble, a one byte packet ID, CRC, and callback functions. 
 
-For example: ```uartPro device1(0xFF,0xFA,handlePacketDevice1);```
+For example: ```Capsule device1(0xFF,0xFA,handlePacketDevice1);```
 
-The protocol is implemented in the `uartPro` class. The class is initialised with 3 parameters, two preamble bytes, and the callback function to call when a packet is received to handle the decoded data. 
+The protocol is implemented in the `Capsule` class. The class is initialised with 3 parameters, two preamble bytes, and the callback function to call when a packet is received to handle the decoded data. 
 
 The goal is to be able to reliably manage multiple bidirectional UART communications on a single board. The `main.cpp` attached file is an example of the class used to manage 3 different UART ports. We start by creating the 3 objects as well as redefining the 3 UART port fo easier use later. We also decided to create a different handle fonction for each device. In some cases, using a single handle function for all devices might be possible. 
 
