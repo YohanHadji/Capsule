@@ -9,11 +9,13 @@
 #define DEVICE2_BAUD 115200
 #define DEVICE3_BAUD 115200
 
-void handlePacket(); 
+void handlePacketDevice1(); 
+void handlePacketDevice2(); 
+void handlePacketDevice3(); 
 
 uartPro device1(0xFF,0xFA,handlePacketDevice1);
-uartPro device2(0xFF,0xFA,handlePacketDevice2);
-uartPro device3(0xFF,0xFA,handlePacketDevice3);
+uartPro device2(0xFF,0xFB,handlePacketDevice2);
+uartPro device3(0xFF,0xFC,handlePacketDevice3);
 
 void setup() {
   DEVICE1_PORT.begin(DEVICE1_BAUD);

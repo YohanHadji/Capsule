@@ -24,10 +24,12 @@ class uartPro {
     void decode(byte);
     packet encode(packet);
   private:
-    byte buffer[256]; 
+    packet buffer;
     byte PRA;
     byte PRB;
     parserState currentState;
+    unsigned lenCount;
+    void (*functionCallBack)(packet);
 };
 
 #endif    //end UARTPRO_H
