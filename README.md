@@ -1,7 +1,5 @@
 # Capsule
 
-**NOTE: The implementation of the parser itself has not be done yet. This is just placeholder code for the moment. But the principle of the implementation has already been defined and is described in the following readme.**
-
 This is supposed to be a small protocol on the layer above the UART protocol and `Serial.read()`, `Serial.write()` function from the Arduino framework to transmit packets with a two bytes preamble, a one byte packet ID, CRC, and callback functions. 
 
 For example: ```Capsule device1(0xFF,0xFA,handlePacketDevice1);```
