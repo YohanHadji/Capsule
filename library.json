@@ -1,0 +1,22 @@
+{
+    "name": "Capsule",
+    "version": "1.0.0",
+    "description": "This generic library helps sending packets with preamble, ID, length and checksum bytes",
+    "keywords": "protocol, packet, capsule, preamble, id, length, checksum",
+    "repository":
+    {
+      "type": "git",
+      "url": "https://github.com/YohanHadji/Capsule"
+    },
+    "authors":
+    [
+      {
+        "name": "Yohan Hadji",
+        "email": "yohan.hadji@epfl.ch",
+        "maintainer": true
+      }
+    ],
+    "license": "MIT",
+    "frameworks": "Arduino",
+    "platforms": "Teensy"
+  }
