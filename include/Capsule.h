@@ -1,5 +1,5 @@
-#ifndef UARTPRO_H
-#define UARTPRO_H
+#ifndef CAPSULE_H
+#define CAPSULE_H
 
 #include <Arduino.h>
 
@@ -32,4 +32,4 @@ class Capsule {
     void (*functionCallBack)(packet);
 };
 
-#endif    //end UARTPRO_H
+#endif    // end CAPSULE_H
