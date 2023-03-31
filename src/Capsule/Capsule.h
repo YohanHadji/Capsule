@@ -14,7 +14,7 @@ enum parserState {
 
 struct packet {
     byte packetData[256];
-    unsigned len;
+    uint8_t len;
     byte packetId;
 };
 

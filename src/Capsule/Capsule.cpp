@@ -30,22 +30,32 @@ void Capsule::decode(byte dataIn) {
         break;
         case LENGTH:
             buffer.len = dataIn;
-            lenCount = buffer.len;
+            lenCount = 0;
             currentState = PAYLOAD;
         break;
         case PAYLOAD:
-            if (lenCount == 0) {
-                currentState = CRC;
-                break;
+            if (lenCount < buffer.len) {
+                buffer.packetData[lenCount] = dataIn;
+                lenCount++;
+                if (lenCount == buffer.len) {
+                    currentState = CRC;
+                }
             }
-            buffer.packetData[buffer.len - lenCount] = dataIn;
-            lenCount--;
+            else {
+                currentState = CRC;
+            }
         break;
         case CRC:
-        // Implement CRC check here
-        // If CRC is correct, call the callback function
-        functionCallBack(buffer);
-        // If CRC is incorrect, reset the state machine
+        uint8_t checkSum = 0;
+        for (unsigned i(0); i < buffer.len; i++) {
+            checkSum += buffer.packetData[i];
+        }
+        if (checkSum == dataIn) {
+            functionCallBack(buffer);
+        }
+        else {
+            // Should return error code maybe?
+        }
         currentState = PREAMBLE_A;
         break;
     }
@@ -54,15 +64,17 @@ void Capsule::decode(byte dataIn) {
 packet Capsule::encode(packet packetIn) {
     packet packetOut;
     packetOut.packetId = packetIn.packetId;
-    packetOut.len = packetIn.len;
+    packetOut.len = packetIn.len+5;
     packetOut.packetData[0] = PRA;
     packetOut.packetData[1] = PRB;
     packetOut.packetData[2] = packetIn.packetId;
     packetOut.packetData[3] = packetIn.len;
+
+    uint8_t checkSum = 0;
     for (unsigned i(0); i < packetIn.len; i++) {
         packetOut.packetData[i + 4] = packetIn.packetData[i];
+        checkSum += packetIn.packetData[i];
     }
-    // Replace this line with CRC calculation
-    packetOut.packetData[packetIn.len + 4] = 0x00; 
+    packetOut.packetData[packetIn.len + 4] = checkSum; 
     return packetOut;
 }
