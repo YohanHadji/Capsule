@@ -3,6 +3,8 @@
 
 #include <Arduino.h>
 
+#define MAX_BUFFER_SIZE 1024
+
 enum parserState {
     PREAMBLE_A = 0,
     PREAMBLE_B,
@@ -12,24 +14,23 @@ enum parserState {
     CRC
 };
 
-struct packet {
-    byte packetData[256];
-    uint8_t len;
-    byte packetId;
-};
+unsigned getCodedLen(unsigned);
 
 class Capsule {
   public:
-    Capsule(byte, byte, void (*function)(packet));
+    Capsule(byte, byte, void (*function)(byte, byte [], unsigned));
     void decode(byte);
-    packet encode(packet);
+    byte* encode(byte, byte [], unsigned);
   private:
-    packet buffer;
+    byte buffer[MAX_BUFFER_SIZE];
     byte PRA;
     byte PRB;
+    byte packetId;
+    byte len;
     parserState currentState;
     unsigned lenCount;
-    void (*functionCallBack)(packet);
+    void (*functionCallBack)(byte, byte [], unsigned);
 };
+
 
 #endif    // end CAPSULE_H
