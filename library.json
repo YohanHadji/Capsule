@@ -1,6 +1,6 @@
 {
     "name": "Capsule",
-    "version": "1.0.2",
+    "version": "1.0.3",
     "description": "This generic library helps sending packets with preamble, ID, length and checksum bytes",
     "keywords": "protocol, packet, capsule, preamble, id, length, checksum",
     "repository":

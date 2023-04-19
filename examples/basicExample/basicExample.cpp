@@ -1,5 +1,5 @@
 #include <Arduino.h>
-#include "capsule.h"   
+#include <capsule.h>   
 
 #define SENDER false
 
@@ -8,19 +8,19 @@
 #define DEVICE3_PORT Serial3
 
 #define DEVICE1_BAUD 115200
-#define DEVICE2_BAUD 115200
+#define DEVICE2_BAUD 6000000
 #define DEVICE3_BAUD 6000000
 
-void handlePacketDevice1(byte, byte [], unsigned); 
-void handlePacketDevice2(byte, byte [], unsigned); 
-void handlePacketDevice3(byte, byte [], unsigned); 
+void handleRxPacketDevice1(uint8_t packetId, uint8_t *dataIn, uint32_t len); 
+void handleRxPacketDevice2(uint8_t packetId, uint8_t *dataIn, uint32_t len); 
+void handleRxPacketDevice3(uint8_t packetId, uint8_t *dataIn, uint32_t len); 
 
 void sendRandomPacket();
 void sendRandomNoise();
 
-Capsule device1(0xFF,0xFA,handlePacketDevice1);
-Capsule device2(0xFF,0xFB,handlePacketDevice2);
-Capsule device3(0xFF,0xFC,handlePacketDevice3);
+CapsuleStatic device1(handleRxPacketDevice1);
+CapsuleStatic device2(handleRxPacketDevice2);
+CapsuleStatic device3(handleRxPacketDevice3);
 
 void setup() {
   DEVICE1_PORT.begin(DEVICE1_BAUD);
@@ -35,23 +35,23 @@ void setup() {
 
 void loop() {
   while(DEVICE1_PORT.available()) {
-    byte data = DEVICE1_PORT.read();
+    uint8_t data = DEVICE1_PORT.read();
     device1.decode(data);
   }
 
   while(DEVICE2_PORT.available()) {
-    byte data = DEVICE2_PORT.read();
+    uint8_t data = DEVICE2_PORT.read();
     device2.decode(data);
   }
 
   while(DEVICE3_PORT.available()) {
-    byte data = DEVICE3_PORT.read();
+    uint8_t data = DEVICE3_PORT.read();
     //Serial.print(data,HEX); Serial.print(" "); 
     device3.decode(data);
   }
 }
 
-void handlePacketDevice1(byte packetId, byte dataIn[], unsigned len) {
+void handleRxPacketDevice1(uint8_t packetId, uint8_t *dataIn, uint32_t len) {
   switch (packetId) {
     case 0x00:
       Serial.println("Packet with ID 00 received : ");
@@ -66,7 +66,7 @@ void handlePacketDevice1(byte packetId, byte dataIn[], unsigned len) {
   }
 }
 
-void handlePacketDevice2(byte packetId, byte dataIn[], unsigned len) {
+void handleRxPacketDevice2(uint8_t packetId, uint8_t *dataIn, uint32_t len) {
   switch (packetId) {
     case 0x00:
       Serial.println("Packet with ID 00 received : ");
@@ -81,7 +81,7 @@ void handlePacketDevice2(byte packetId, byte dataIn[], unsigned len) {
   }
 }
 
-void handlePacketDevice3(byte packetId, byte dataIn[], unsigned len) {
+void handleRxPacketDevice3(uint8_t packetId, uint8_t *dataIn, uint32_t len) {
   switch (packetId) {
     case 0x00:
     break;
@@ -89,7 +89,7 @@ void handlePacketDevice3(byte packetId, byte dataIn[], unsigned len) {
       //Serial.println("Packet with ID 01 received : ");
       //Serial.write(dataIn,len);
       //delay(1000);
-      static unsigned counter = 0;
+      static uint32_t counter = 0;
       counter++;
       Serial.println(counter);
       if (random(0,100) < 10) {
@@ -104,23 +104,23 @@ void handlePacketDevice3(byte packetId, byte dataIn[], unsigned len) {
 }
 
 void sendRandomPacket() {
-  byte packetData[4];
-  byte packetId = 0x01; 
-  unsigned len = 4;
+  uint8_t packetData[4];
+  uint8_t packetId = 0x01; 
+  uint32_t len = 4;
   
   for (int i = 0; i < 4; i++) {
     packetData[i] = i;
   }
 
-  byte* packetToSend = device3.encode(packetId,packetData,len);
-  DEVICE3_PORT.write(packetToSend,getCodedLen(len));
+  uint8_t* packetToSend = device3.encode(packetId,packetData,len);
+  DEVICE3_PORT.write(packetToSend,device3.getCodedLen(len));
   delete[] packetToSend;
 }
 
 void sendRandomNoise() {
-  byte randomBuffer[25];
-  unsigned randomBufferSize = random(0,25);
-  for (unsigned i = 0; i < randomBufferSize; i++) {
+  uint8_t randomBuffer[25];
+  uint32_t randomBufferSize = random(0,25);
+  for (uint32_t i = 0; i < randomBufferSize; i++) {
     randomBuffer[i] = random(0,255);
   }
   DEVICE3_PORT.write(randomBuffer,randomBufferSize);
