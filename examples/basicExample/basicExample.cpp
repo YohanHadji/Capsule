@@ -1,7 +1,9 @@
 #include <Arduino.h>
-#include <capsule.h>   
+#include <Capsule.h>   
 
 #define SENDER false
+
+#define SERIAL_TO_PC Serial
 
 #define DEVICE1_PORT Serial1
 #define DEVICE2_PORT Serial2
@@ -15,12 +17,19 @@ void handleRxPacketDevice1(uint8_t packetId, uint8_t *dataIn, uint32_t len);
 void handleRxPacketDevice2(uint8_t packetId, uint8_t *dataIn, uint32_t len); 
 void handleRxPacketDevice3(uint8_t packetId, uint8_t *dataIn, uint32_t len); 
 
-void sendRandomPacket();
-void sendRandomNoise();
+void sendPacketWithDevice3();
+void sendNoiseWithDevice3();
 
 CapsuleStatic device1(handleRxPacketDevice1);
 CapsuleStatic device2(handleRxPacketDevice2);
 CapsuleStatic device3(handleRxPacketDevice3);
+
+enum CAPSULE_ID {
+  TELEMETRY = 0,
+  COMMAND,
+  EMERGENCY,
+  ACK
+};
 
 void setup() {
   DEVICE1_PORT.begin(DEVICE1_BAUD);
@@ -29,7 +38,7 @@ void setup() {
 
   if (SENDER) {
     delay(1000);
-    sendRandomPacket();
+    sendPacketWithDevice3();
   }
 }
 
@@ -46,20 +55,19 @@ void loop() {
 
   while(DEVICE3_PORT.available()) {
     uint8_t data = DEVICE3_PORT.read();
-    //Serial.print(data,HEX); Serial.print(" "); 
     device3.decode(data);
   }
 }
 
 void handleRxPacketDevice1(uint8_t packetId, uint8_t *dataIn, uint32_t len) {
   switch (packetId) {
-    case 0x00:
-      Serial.println("Packet with ID 00 received : ");
-      Serial.write(dataIn,len);
+    case CAPSULE_ID::TELEMETRY:
+      SERIAL_TO_PC.println("Telemetry packet received from device 1");
+      SERIAL_TO_PC.write(dataIn,len);
     break;
-    case 0x01:
-      Serial.println("Packet with ID 01 received : ");
-      Serial.write(dataIn,len);
+    case CAPSULE_ID::COMMAND:
+      SERIAL_TO_PC.println("Command packet received from device 1");
+      SERIAL_TO_PC.write(dataIn,len);
     break;
     default:
     break;
@@ -68,13 +76,13 @@ void handleRxPacketDevice1(uint8_t packetId, uint8_t *dataIn, uint32_t len) {
 
 void handleRxPacketDevice2(uint8_t packetId, uint8_t *dataIn, uint32_t len) {
   switch (packetId) {
-    case 0x00:
-      Serial.println("Packet with ID 00 received : ");
-      Serial.write(dataIn,len);
+    case CAPSULE_ID::EMERGENCY:
+      SERIAL_TO_PC.println("Emergency packet received from device 2");
+      SERIAL_TO_PC.write(dataIn,len);
     break;
-    case 0x01:
-      Serial.println("Packet with ID 01 received : ");
-      Serial.write(dataIn,len);
+    case CAPSULE_ID::ACK:
+      SERIAL_TO_PC.println("Ack packet received from device 2");
+      SERIAL_TO_PC.write(dataIn,len);
     break;
     default:
     break;
@@ -83,27 +91,20 @@ void handleRxPacketDevice2(uint8_t packetId, uint8_t *dataIn, uint32_t len) {
 
 void handleRxPacketDevice3(uint8_t packetId, uint8_t *dataIn, uint32_t len) {
   switch (packetId) {
-    case 0x00:
+    case CAPSULE_ID::TELEMETRY:
     break;
-    case 0x01:
-      //Serial.println("Packet with ID 01 received : ");
-      //Serial.write(dataIn,len);
-      //delay(1000);
-      static uint32_t counter = 0;
-      counter++;
-      Serial.println(counter);
-      if (random(0,100) < 10) {
-        sendRandomNoise();
-      }
-      sendRandomPacket();
-      delay(100);
+    case CAPSULE_ID::COMMAND:
+    break;
+    case CAPSULE_ID::EMERGENCY:
+    break;
+    case CAPSULE_ID::ACK:
     break;
     default:
     break;
   }
 }
 
-void sendRandomPacket() {
+void sendPacketWithDevice3() {
   uint8_t packetData[4];
   uint8_t packetId = 0x01; 
   uint32_t len = 4;
@@ -117,7 +118,7 @@ void sendRandomPacket() {
   delete[] packetToSend;
 }
 
-void sendRandomNoise() {
+void sendNoiseWithDevice3() {
   uint8_t randomBuffer[25];
   uint32_t randomBufferSize = random(0,25);
   for (uint32_t i = 0; i < randomBufferSize; i++) {
@@ -125,4 +126,3 @@ void sendRandomNoise() {
   }
   DEVICE3_PORT.write(randomBuffer,randomBufferSize);
 }
-
