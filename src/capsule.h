@@ -7,6 +7,8 @@
 #define PRA_DEFAULT 0xFF
 #define PRB_DEFAULT 0xFA
 
+#include <cstdint> // need to add this for C++ Ubuntu for uint8_t
+
 enum ParserState {
     PREAMBLE_A = 0,
     PREAMBLE_B,

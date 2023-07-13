@@ -10,29 +10,42 @@ Here is how to create a Capsule object outside of any class without specificing 
 
 You first have to write the prototype of the callback function that willl be called when a full packed has been parsed. This callback function has 3 paremeters, the packetId, used to give the ability to the user to differentiate multiple different potential packet types, then the data as a byte array and the lenght of the data.  
 
-```void handleRxPacketDevice1(uint8_t packetId, uint8_t *dataIn, uint32_t len);```
+```cpp
+void handleRxPacketDevice1(uint8_t packetId, uint8_t *dataIn, uint32_t len);
+```
 
 The depending on whether we use the Capsule object within another class or at main level there are two different constructions of the object. 
 
 If the object is used at main level. You should use this one:
 
-```CapsuleStatic device1(handlePacketDevice1);```
+```cpp
+CapsuleStatic device1(handlePacketDevice1);
+```
 
 If you want to use specific preambles bytes you can use this 
 
-```CapsuleStatic device1(handlePacketDevice1,PRA,PRB);```
+```cpp
+CapsuleStatic device1(handlePacketDevice1,PRA,PRB);
+```
 
 If the object is used withing another class and the callback function is a method of this given class then the Capsule object should be created like that:
 
-```Capsule<ReplaceWithYourClass> device1(handlePacketDeviceDefinedInYourClass, this);```
+```cpp
+Capsule<ReplaceWithYourClass> device1(handlePacketDeviceDefinedInYourClass, this);
+```
 
 You can again specify specific preambles bytes to use with : 
 
-```Capsule<ReplaceWithYourClass> device1(handlePacketDeviceDefinedInYourClass, this, PRA, PRB);```
+```cpp
+#define PRA 0xAB
+#define PRB 0x21
+
+Capsule<ReplaceWithYourClass> device1(handlePacketDeviceDefinedInYourClass, this, PRA, PRB);
+```
 
 Once the object is created, you have to "feed it" with incoming data. Here is an example of how it's done when the data is coming from a serial port. The implementation would be almost the same for data coming from a LoRa or from WiFi, the Capsule class doesn't care where or how the data is arriving, as long as you feed the data byte by byte inside its encode function. 
 
-```
+```cpp
 while(DEVICE1_PORT.available()) {
     uint8_t data = DEVICE1_PORT.read();
     device1.decode(data);
@@ -41,7 +54,7 @@ while(DEVICE1_PORT.available()) {
 
 The Capsule class will eat the bytes one by one and will let you know when a full packet has been parsed by calling the callback function that you provided. Here is an example of how.. handle the data. 
 
-```
+```cpp
 void handleRxPacketDevice1(uint8_t packetId, uint8_t *dataIn, uint32_t len) {
   switch (packetId) {
     case 0x00:
@@ -62,7 +75,7 @@ This is pretty cool right?! Now, can you encode and send packets too?? Yes - her
 
 This function is an example of how to send a packet with 4 data bytes. The first thing you can note is that to send 4 data bytes, we actually have to send 4+5 = 9 bytes. So sending very small packets is not super usefull. This is the case because we have 2 preambles bytes used to detect the beginning of a packet. Then we have the packetId, the lenght byte, and at the end of the packet the checksum byte. 
 
-```
+```cpp
 void sendRandomPacket() {
   uint8_t packetData[4];
   uint8_t packetId = 0x01; 
