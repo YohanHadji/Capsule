@@ -31,7 +31,10 @@ enum CAPSULE_ID {
   ACK
 };
 
+long counter = 0;
+
 void setup() {
+  //SERIAL_TO_PC.begin(115200);
   DEVICE1_PORT.begin(DEVICE1_BAUD);
   DEVICE2_PORT.begin(DEVICE2_BAUD);
   DEVICE3_PORT.begin(DEVICE3_BAUD);
@@ -40,6 +43,8 @@ void setup() {
     delay(1000);
     sendPacketWithDevice3();
   }
+
+  pinMode(LED_BUILTIN, OUTPUT);
 }
 
 void loop() {
@@ -98,6 +103,16 @@ void handleRxPacketDevice3(uint8_t packetId, uint8_t *dataIn, uint32_t len) {
     case CAPSULE_ID::EMERGENCY:
     break;
     case CAPSULE_ID::ACK:
+    {
+      digitalWrite(LED_BUILTIN, HIGH);
+      uint8_t* packetToSend = new uint8_t[device3.getCodedLen(len)];
+      packetToSend = device3.encode(packetId, dataIn, len);
+      DEVICE3_PORT.write(packetToSend,device3.getCodedLen(len));
+      delete[] packetToSend;
+      digitalWrite(LED_BUILTIN, LOW);
+      //counter++;
+      //Serial.println(counter);
+    }
     break;
     default:
     break;
@@ -105,14 +120,13 @@ void handleRxPacketDevice3(uint8_t packetId, uint8_t *dataIn, uint32_t len) {
 }
 
 void sendPacketWithDevice3() {
-  uint8_t packetData[4];
-  uint8_t packetId = 0x01; 
-  uint32_t len = 4;
+  uint8_t packetData[200];
+  uint8_t packetId = CAPSULE_ID::ACK; 
+  uint32_t len = 200;
   
-  for (int i = 0; i < 4; i++) {
+  for (int i = 0; i < 200; i++) {
     packetData[i] = i;
   }
-
   uint8_t* packetToSend = device3.encode(packetId,packetData,len);
   DEVICE3_PORT.write(packetToSend,device3.getCodedLen(len));
   delete[] packetToSend;
